@@ -110,8 +110,8 @@ services:
         condition: service_healthy
       discovery-server:
         condition: service_healthy
-    ports:
-     - 8080:8080
+    # ports:
+    #  - 8080:8080
 
   tracing-server:
     image: openzipkin/zipkin
@@ -159,3 +159,18 @@ services:
           memory: 256M
     ports:
     - 9091:9090
+
+  nginx-load-balancer:
+    image: nginx:latest
+    container_name: nginx-load-balancer
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    volumes:
+     - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      api-gateway:
+        condition: service_started
+    ports:
+     - 80:80
